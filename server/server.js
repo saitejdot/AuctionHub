@@ -77,8 +77,13 @@ app.use(errorHandler);
 const { initSocket } = require('./socket/socketHandler');
 initSocket(server);
 
-// Start BullMQ Worker
-require('./queues/auctionProcessor');
+// Start BullMQ Worker (graceful fallback if Redis unavailable)
+try {
+  require('./queues/auctionProcessor');
+  console.log('BullMQ worker started');
+} catch (err) {
+  console.warn('BullMQ worker failed to start (Redis unavailable):', err.message);
+}
 
 const start = async () => {
   await connectDB();

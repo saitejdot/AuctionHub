@@ -154,3 +154,34 @@ exports.getTransactions = asyncHandler(async (req, res) => {
     page, limit, total, pages: Math.ceil(total / limit),
   });
 });
+
+// @desc    Delete a user permanently
+// @route   DELETE /api/admin/users/:id
+// @access  Private (Admin only)
+exports.deleteUser = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    res.status(404);
+    throw new Error('User not found');
+  }
+  if (user.role === 'admin') {
+    res.status(403);
+    throw new Error('Cannot delete an admin account');
+  }
+  await user.deleteOne();
+  sendResponse(res, 200, 'User deleted successfully');
+});
+
+// @desc    Delete an auction permanently
+// @route   DELETE /api/admin/auctions/:id
+// @access  Private (Admin only)
+exports.deleteAuction = asyncHandler(async (req, res) => {
+  const auction = await Auction.findById(req.params.id);
+  if (!auction) {
+    res.status(404);
+    throw new Error('Auction not found');
+  }
+  await auction.deleteOne();
+  sendResponse(res, 200, 'Auction deleted successfully');
+});
+

@@ -1,7 +1,7 @@
 const express = require('express');
 const {
-  getStats, getUsers, blockUser, unblockUser,
-  getAuctions, cancelAuction, getTransactions,
+  getStats, getUsers, blockUser, unblockUser, deleteUser,
+  getAuctions, cancelAuction, deleteAuction, getTransactions,
 } = require('../controllers/adminController');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -13,8 +13,10 @@ router.get('/stats', getStats);
 router.get('/users', getUsers);
 router.patch('/users/:id/block', blockUser);
 router.patch('/users/:id/unblock', unblockUser);
+router.delete('/users/:id', deleteUser);
 router.get('/auctions', getAuctions);
 router.patch('/auctions/:id/cancel', cancelAuction);
+router.delete('/auctions/:id', deleteAuction);
 router.get('/transactions', getTransactions);
 
 module.exports = router;

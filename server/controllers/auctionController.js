@@ -46,6 +46,10 @@ exports.getAuctions = asyncHandler(async (req, res) => {
   if (req.query.status) {
     query.status = req.query.status;
   }
+
+  if (req.query.seller) {
+    query.seller = req.query.seller;
+  }
   
   if (req.query.category) {
     query.category = req.query.category;

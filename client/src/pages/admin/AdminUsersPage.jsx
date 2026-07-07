@@ -51,6 +51,19 @@ const AdminUsersPage = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!confirm('PERMANENTLY delete this user? This action is irreversible.')) return;
+    setActionLoading(id + '-delete');
+    try {
+      await api.delete(`/admin/users/${id}`);
+      setUsers((prev) => prev.filter((u) => u._id !== id));
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete user');
+    } finally {
+      setActionLoading(null);
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
   if (error) return <div className="text-center text-red-600 mt-10">{error}</div>;
 
@@ -93,23 +106,32 @@ const AdminUsersPage = () => {
                 </td>
                 <td className="px-6 py-4 text-right">
                   {u.role !== 'admin' && (
-                    u.isBlocked ? (
+                    <div className="flex items-center justify-end gap-3">
+                      {u.isBlocked ? (
+                        <button
+                          onClick={() => handleUnblock(u._id)}
+                          disabled={actionLoading === u._id + '-unblock'}
+                          className="flex items-center gap-1 text-green-600 hover:text-green-800 font-medium text-sm transition disabled:opacity-50"
+                        >
+                          <UserCheck size={16} /> Unblock
+                        </button>
+                      ) : (
+                        <button
+                          onClick={() => handleBlock(u._id)}
+                          disabled={actionLoading === u._id + '-block'}
+                          className="flex items-center gap-1 text-orange-600 hover:text-orange-800 font-medium text-sm transition disabled:opacity-50"
+                        >
+                          <UserX size={16} /> Block
+                        </button>
+                      )}
                       <button
-                        onClick={() => handleUnblock(u._id)}
-                        disabled={actionLoading === u._id + '-unblock'}
-                        className="flex items-center gap-1 ml-auto text-green-600 hover:text-green-800 font-medium text-sm transition disabled:opacity-50"
+                        onClick={() => handleDelete(u._id)}
+                        disabled={actionLoading === u._id + '-delete'}
+                        className="flex items-center gap-1 text-red-600 hover:text-red-800 font-medium text-sm transition disabled:opacity-50"
                       >
-                        <UserCheck size={16} /> Unblock
+                        Delete
                       </button>
-                    ) : (
-                      <button
-                        onClick={() => handleBlock(u._id)}
-                        disabled={actionLoading === u._id + '-block'}
-                        className="flex items-center gap-1 ml-auto text-red-600 hover:text-red-800 font-medium text-sm transition disabled:opacity-50"
-                      >
-                        <UserX size={16} /> Block
-                      </button>
-                    )
+                    </div>
                   )}
                 </td>
               </tr>

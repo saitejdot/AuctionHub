@@ -35,16 +35,23 @@ const Navbar = () => {
                 <Link 
                   to={user?.role === 'seller' ? '/seller/dashboard' : user?.role === 'admin' ? '/admin' : '/buyer/dashboard'}
                   className="flex items-center gap-2 text-gray-700 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                  title="Dashboard"
                 >
                   <User size={18} />
-                  <span>{user?.name?.split(' ')[0]}</span>
+                  <span className="hidden sm:inline">{user?.name?.split(' ')[0]}</span>
+                </Link>
+                <Link
+                  to="/profile"
+                  className="text-gray-600 hover:text-primary-600 px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                >
+                  Profile
                 </Link>
                 <button
                   onClick={handleLogout}
                   className="flex items-center gap-2 text-red-600 hover:text-red-800 px-3 py-2 rounded-md text-sm font-medium transition-colors"
                 >
                   <LogOut size={18} />
-                  <span>Logout</span>
+                  <span className="hidden sm:inline">Logout</span>
                 </button>
               </div>
             ) : (

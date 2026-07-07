@@ -3,6 +3,7 @@ const Redis = require('ioredis');
 const redisOptions = {
   maxRetriesPerRequest: null,
   enableReadyCheck: false,
+  retryStrategy: () => null, // Stop reconnecting to prevent terminal spam
 };
 
 const connection = process.env.REDIS_URL 

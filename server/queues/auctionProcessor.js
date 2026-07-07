@@ -51,15 +51,16 @@ const processEndingSoon = async (auctionId) => {
   const auction = await Auction.findById(auctionId);
   if (!auction || auction.status !== 'live') return;
 
-  // 1. Get unique bidders
+  // Get unique bidders
   const uniqueBidders = await Bid.distinct('bidder', { auction: auctionId });
   
-  // 2. Notify all bidders that auction is ending in 1 hour
+  // Notify all unique bidders that auction is ending in 1 hour
   console.log(`Notifying ${uniqueBidders.length} bidders that auction ${auctionId} is ending soon`);
-  // uniqueBidders.forEach(bidderId => {
-  //   notificationService.createAndDeliverNotification(bidderId, 'auction_ending_soon', ...);
-  // });
+  for (const bidderId of uniqueBidders) {
+    await notificationService.notifyAuctionEndingSoon(bidderId, auctionId, auction.title, auction.endTime);
+  }
 };
+
 
 const processPaymentTimeout = async (auctionId) => {
   console.log(`Processing payment-timeout for ${auctionId}`);

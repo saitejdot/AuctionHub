@@ -54,6 +54,19 @@ const AdminAuctionsPage = () => {
     }
   };
 
+  const handleDelete = async (id) => {
+    if (!confirm('PERMANENTLY delete this auction? This action is irreversible.')) return;
+    setCancelLoading(id + '-delete');
+    try {
+      await api.delete(`/admin/auctions/${id}`);
+      setAuctions((prev) => prev.filter((a) => a._id !== id));
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to delete auction');
+    } finally {
+      setCancelLoading(null);
+    }
+  };
+
   if (loading) return <LoadingSpinner />;
   if (error) return <div className="text-center text-red-600 mt-10">{error}</div>;
 
@@ -105,15 +118,24 @@ const AdminAuctionsPage = () => {
                 </td>
                 <td className="px-6 py-4 font-semibold text-gray-900">${a.currentHighestBid}</td>
                 <td className="px-6 py-4 text-right">
-                  {!['sold', 'cancelled'].includes(a.status) && (
+                  <div className="flex items-center justify-end gap-3">
+                    {!['sold', 'cancelled'].includes(a.status) && (
+                      <button
+                        onClick={() => handleCancel(a._id)}
+                        disabled={cancelLoading === a._id}
+                        className="flex items-center gap-1 text-orange-600 hover:text-orange-800 font-medium text-sm transition disabled:opacity-50"
+                      >
+                        <XCircle size={16} /> Cancel
+                      </button>
+                    )}
                     <button
-                      onClick={() => handleCancel(a._id)}
-                      disabled={cancelLoading === a._id}
-                      className="flex items-center gap-1 ml-auto text-red-600 hover:text-red-800 font-medium text-sm transition disabled:opacity-50"
+                      onClick={() => handleDelete(a._id)}
+                      disabled={cancelLoading === a._id + '-delete'}
+                      className="flex items-center gap-1 text-red-600 hover:text-red-800 font-medium text-sm transition disabled:opacity-50"
                     >
-                      <XCircle size={16} /> Cancel
+                      Delete
                     </button>
-                  )}
+                  </div>
                 </td>
               </tr>
             ))}

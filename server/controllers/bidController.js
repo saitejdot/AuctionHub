@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Bid = require('../models/Bid');
 const Auction = require('../models/Auction');
 const sendResponse = require('../utils/sendResponse');
+const { createAndDeliverNotification } = require('../services/notificationService');
 
 // @desc    Place a bid on an auction
 // @route   POST /api/bids
@@ -35,17 +36,17 @@ exports.placeBid = asyncHandler(async (req, res) => {
     throw new Error('Sellers cannot bid on their own auctions');
   }
 
-  // 5. Check if the bid amount is high enough based on current state
+  // 5. Check if the bid amount is high enough
   const minimumRequired = auction.currentHighestBid + auction.minBidIncrement;
-  
-  // If no bids yet, they must at least match startingPrice + minBidIncrement (as per architecture decision)
-  // Wait, the plan says: `bid >= startingPrice + minBidIncrement` for the first bid, but currentHighestBid defaults to startingPrice.
   if (amount < minimumRequired) {
     res.status(400);
     throw new Error(`Bid amount must be at least $${minimumRequired}`);
   }
 
-  // 6. Atomic Update: Try to update the auction ONLY if the currentHighestBid hasn't changed since we read it
+  // Save the previous highest bidder before updating (for outbid notification)
+  const previousHighestBidder = auction.highestBidder;
+
+  // 6. Atomic Update: Try to update the auction ONLY if the currentHighestBid hasn't changed
   const updatedAuction = await Auction.findOneAndUpdate(
     {
       _id: auctionId,
@@ -78,10 +79,28 @@ exports.placeBid = asyncHandler(async (req, res) => {
   // Fetch populated bid to emit
   const populatedBid = await Bid.findById(bid._id).populate('bidder', 'name avatar');
 
-  // 9. (Phase 8/10) Emit Socket.IO event and Notifications here...
+  // 9. Emit Socket.IO event to all users in the auction room
   const { getIo } = require('../socket/socketHandler');
   const io = getIo();
   io.to(`auction_${auctionId}`).emit('new_bid', populatedBid);
+
+  // 10. Send outbid notification to the previous highest bidder
+  if (
+    previousHighestBidder &&
+    previousHighestBidder.toString() !== req.user._id.toString()
+  ) {
+    try {
+      await createAndDeliverNotification(
+        previousHighestBidder,
+        'outbid',
+        `You have been outbid on "${auction.title}". New highest bid: $${amount}.`,
+        auctionId
+      );
+    } catch (err) {
+      // Non-critical: don't fail the bid if notification fails
+      console.error('Outbid notification failed:', err.message);
+    }
+  }
 
   sendResponse(res, 201, 'Bid placed successfully', populatedBid);
 });
@@ -96,7 +115,7 @@ exports.getAuctionBids = asyncHandler(async (req, res) => {
 
   const bids = await Bid.find({ auction: req.params.id })
     .populate('bidder', 'name avatar')
-    .sort({ timestamp: -1 })
+    .sort({ createdAt: -1 })  // Fixed: was 'timestamp', correct field is 'createdAt'
     .skip(skip)
     .limit(limit);
 

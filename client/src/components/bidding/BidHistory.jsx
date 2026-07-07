@@ -23,7 +23,7 @@ const BidHistory = ({ bids }) => {
                 <div>
                   <p className="text-sm font-medium text-gray-900">{bid.bidder?.name}</p>
                   <p className="text-xs text-gray-500">
-                    {new Date(bid.timestamp).toLocaleString()}
+                    {new Date(bid.createdAt).toLocaleString()}
                   </p>
                 </div>
               </div>
