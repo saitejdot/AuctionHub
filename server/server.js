@@ -34,12 +34,7 @@ const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
 // ── Middleware ─────────────────────────────────────────────────────────────
 app.use(helmet());
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (e.g. mobile apps, curl, Postman)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) return callback(null, true);
-    return callback(new Error(`CORS: origin '${origin}' not allowed`));
-  },
+  origin: allowedOrigins,
   credentials: true,
 }));
 app.use(express.json());
