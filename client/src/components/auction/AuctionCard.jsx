@@ -35,7 +35,7 @@ const AuctionCard = ({ auction }) => {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs text-gray-400">Current Bid</p>
-            <p className="text-xl font-bold text-gray-900">${auction.currentHighestBid}</p>
+            <p className="text-xl font-bold text-gray-900">₹{auction.currentHighestBid}</p>
           </div>
           <div className="text-right">
             <p className="text-xs text-gray-400">Time Left</p>

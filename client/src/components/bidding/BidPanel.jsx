@@ -14,7 +14,7 @@ const BidPanel = ({ auctionId, currentBid, minIncrement, onBidSuccess }) => {
     const amount = Number(bidAmount);
 
     if (amount < minimumRequired) {
-      setError(`Bid must be at least $${minimumRequired}`);
+      setError(`Bid must be at least ₹${minimumRequired}`);
       return;
     }
 
@@ -37,8 +37,8 @@ const BidPanel = ({ auctionId, currentBid, minIncrement, onBidSuccess }) => {
       <h3 className="text-lg font-semibold mb-4">Place a Bid</h3>
       
       <div className="flex justify-between text-sm text-gray-600 mb-4">
-        <span>Current Highest Bid: <strong>${currentBid}</strong></span>
-        <span>Min Increment: <strong>${minIncrement}</strong></span>
+        <span>Current Highest Bid: <strong>₹{currentBid}</strong></span>
+        <span>Min Increment: <strong>₹{minIncrement}</strong></span>
       </div>
 
       <form onSubmit={handleBidSubmit}>

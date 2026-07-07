@@ -150,3 +150,17 @@ exports.deleteAuction = asyncHandler(async (req, res) => {
 
   sendResponse(res, 200, 'Auction deleted successfully');
 });
+
+// @desc    Get auctions won by the current user (payment pending or sold)
+// @route   GET /api/auctions/won
+// @access  Private (Buyer only)
+exports.getWonAuctions = asyncHandler(async (req, res) => {
+  const auctions = await Auction.find({
+    highestBidder: req.user._id,
+    status: { $in: ['payment_pending', 'sold'] }
+  })
+    .populate('seller', 'name')
+    .sort({ endTime: -1 });
+
+  sendResponse(res, 200, 'Won auctions fetched successfully', auctions);
+});

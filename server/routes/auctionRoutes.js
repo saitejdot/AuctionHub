@@ -5,11 +5,15 @@ const {
   getAuctionById,
   updateAuction,
   deleteAuction,
+  getWonAuctions,
 } = require('../controllers/auctionController');
 const { protect, authorize } = require('../middleware/auth');
 const upload = require('../middleware/upload');
 
 const router = express.Router();
+
+// Must be defined BEFORE /:id to avoid 'won' being treated as an ID
+router.get('/won', protect, authorize('buyer'), getWonAuctions);
 
 router
   .route('/')

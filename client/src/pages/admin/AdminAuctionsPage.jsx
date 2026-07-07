@@ -116,7 +116,7 @@ const AdminAuctionsPage = () => {
                     {a.status.replace('_', ' ')}
                   </span>
                 </td>
-                <td className="px-6 py-4 font-semibold text-gray-900">${a.currentHighestBid}</td>
+                <td className="px-6 py-4 font-semibold text-gray-900">₹{a.currentHighestBid}</td>
                 <td className="px-6 py-4 text-right">
                   <div className="flex items-center justify-end gap-3">
                     {!['sold', 'cancelled'].includes(a.status) && (

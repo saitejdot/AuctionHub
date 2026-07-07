@@ -51,7 +51,7 @@ const AdminDashboard = () => {
         <StatCard icon={Gavel} label="Total Auctions" value={stats?.totalAuctions} color="bg-purple-500" />
         <StatCard icon={TrendingUp} label="Live Auctions" value={stats?.liveAuctions} color="bg-green-500" />
         <StatCard icon={CreditCard} label="Total Transactions" value={stats?.totalTransactions} color="bg-orange-500" />
-        <StatCard icon={BarChart2} label="Total Revenue" value={`$${stats?.totalRevenue?.toFixed(2) || 0}`} color="bg-emerald-600" />
+        <StatCard icon={BarChart2} label="Total Revenue" value={`₹${stats?.totalRevenue?.toFixed(2) || 0}`} color="bg-emerald-600" />
       </div>
 
       {/* Quick Nav */}

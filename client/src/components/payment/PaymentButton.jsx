@@ -66,7 +66,7 @@ const PaymentButton = ({ auctionId, amount, auctionTitle }) => {
       className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg transition shadow"
     >
       <CreditCard size={20} />
-      Pay ${amount}
+      Pay ₹{amount}
     </button>
   );
 };

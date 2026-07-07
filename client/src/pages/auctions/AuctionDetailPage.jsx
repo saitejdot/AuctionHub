@@ -118,7 +118,7 @@ const AuctionDetailPage = () => {
   if (!auction) return <div className="text-center mt-10">Auction not found</div>;
 
   const isSeller = isAuthenticated && user?._id === auction.seller._id;
-  const isWinner = isAuthenticated && auction.highestBidder === user?._id;
+  const isWinner = isAuthenticated && (auction.highestBidder?._id === user?._id || auction.highestBidder === user?._id);
 
   return (
     <div className="max-w-5xl mx-auto">
@@ -203,7 +203,7 @@ const AuctionDetailPage = () => {
                 <div className="flex justify-between items-end mb-4">
                   <div>
                     <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">Current Bid</p>
-                    <p className="text-5xl font-black text-gray-900 tracking-tighter">${auction.currentHighestBid}</p>
+                    <p className="text-5xl font-black text-gray-900 tracking-tighter">₹{auction.currentHighestBid}</p>
                   </div>
                   <div className="text-right pb-1">
                     <p className="text-sm font-semibold text-gray-500 mb-1 uppercase tracking-wider">Total Bids</p>

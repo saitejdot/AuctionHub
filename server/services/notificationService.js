@@ -50,11 +50,11 @@ const notifyAuctionWon = async (userId, auctionId, auctionTitle, winningBid) => 
   await createAndDeliverNotification(
     userId,
     'auction_won',
-    `You won the auction: "${auctionTitle}" with a bid of $${winningBid}. Please proceed to payment.`,
+    `You won the auction: "${auctionTitle}" with a bid of ₹${winningBid}. Please proceed to payment.`,
     auctionId,
     {
       subject: `You won: ${auctionTitle}`,
-      html: `<h2>Congratulations!</h2><p>You won the auction <strong>${auctionTitle}</strong> with a bid of <strong>$${winningBid}</strong>.</p><p>Please log in to complete your payment within 24 hours.</p>`,
+      html: `<h2>Congratulations!</h2><p>You won the auction <strong>${auctionTitle}</strong> with a bid of <strong>₹${winningBid}</strong>.</p><p>Please log in to complete your payment within 24 hours.</p>`,
     }
   );
 };
@@ -89,11 +89,11 @@ const notifyPaymentSuccess = async (userId, auctionId, auctionTitle, amount) => 
   await createAndDeliverNotification(
     userId,
     'payment_success',
-    `Payment of $${amount} for "${auctionTitle}" confirmed. Transaction complete.`,
+    `Payment of ₹${amount} for "${auctionTitle}" confirmed. Transaction complete.`,
     auctionId,
     {
       subject: `Payment confirmed: ${auctionTitle}`,
-      html: `<h2>Payment Confirmed</h2><p>Your payment of <strong>$${amount}</strong> for <strong>${auctionTitle}</strong> has been received. The transaction is complete.</p>`,
+      html: `<h2>Payment Confirmed</h2><p>Your payment of <strong>₹${amount}</strong> for <strong>${auctionTitle}</strong> has been received. The transaction is complete.</p>`,
     }
   );
 };

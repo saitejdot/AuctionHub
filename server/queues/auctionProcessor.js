@@ -28,9 +28,11 @@ const processCloseAuction = async (auctionId) => {
 
   await schedulePaymentTimeout(auctionId);
 
+  const winnerIdStr = (auction.highestBidder._id || auction.highestBidder).toString();
+
   // Notify winner
   await notificationService.notifyAuctionWon(
-    auction.highestBidder,
+    winnerIdStr,
     auctionId,
     auction.title,
     auction.currentHighestBid
@@ -39,7 +41,7 @@ const processCloseAuction = async (auctionId) => {
   // Notify all non-winning bidders
   const allBidders = await Bid.distinct('bidder', { auction: auctionId });
   for (const bidderId of allBidders) {
-    if (bidderId.toString() !== auction.highestBidder.toString()) {
+    if (bidderId.toString() !== winnerIdStr) {
       await notificationService.notifyAuctionLost(bidderId, auctionId, auction.title);
     }
   }

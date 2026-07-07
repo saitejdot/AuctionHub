@@ -28,7 +28,7 @@ const BidHistory = ({ bids }) => {
                 </div>
               </div>
               <div className="text-lg font-bold text-gray-900">
-                ${bid.amount}
+                ₹{bid.amount}
               </div>
             </li>
           ))}

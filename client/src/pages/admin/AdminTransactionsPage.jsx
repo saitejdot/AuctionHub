@@ -58,7 +58,7 @@ const AdminTransactionsPage = () => {
                   <td className="px-6 py-4 font-medium text-gray-900">{t.auction?.title}</td>
                   <td className="px-6 py-4 text-gray-600">{t.buyer?.name}</td>
                   <td className="px-6 py-4 text-gray-600">{t.seller?.name}</td>
-                  <td className="px-6 py-4 font-bold text-gray-900">${t.amount}</td>
+                  <td className="px-6 py-4 font-bold text-gray-900">₹{t.amount}</td>
                   <td className="px-6 py-4 text-gray-500">{new Date(t.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))
