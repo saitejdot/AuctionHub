@@ -61,6 +61,7 @@ exports.getAuctions = asyncHandler(async (req, res) => {
 
   const auctions = await Auction.find(query)
     .populate('seller', 'name avatar')
+    .populate('highestBidder', 'name')
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit);

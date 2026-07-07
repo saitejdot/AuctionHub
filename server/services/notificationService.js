@@ -124,6 +124,29 @@ const notifyPaymentExpired = async (userId, auctionId, auctionTitle) => {
   );
 };
 
+const notifySellerOfWinner = async (sellerId, auctionId, auctionTitle, winnerName, winnerEmail, winningBid) => {
+  await createAndDeliverNotification(
+    sellerId,
+    'auction_winner_details',
+    `Your auction "${auctionTitle}" has ended! Winner: ${winnerName} with a winning bid of ₹${winningBid}.`,
+    auctionId,
+    {
+      subject: `Your auction ended: ${auctionTitle}`,
+      html: `
+        <h2>Your Auction Has Ended!</h2>
+        <p>Great news! Your auction <strong>${auctionTitle}</strong> has successfully concluded.</p>
+        <h3>Winner Details</h3>
+        <table style="border-collapse:collapse;width:100%;max-width:400px">
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Winner Name</td><td style="padding:8px;border:1px solid #ddd">${winnerName}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Winner Email</td><td style="padding:8px;border:1px solid #ddd">${winnerEmail}</td></tr>
+          <tr><td style="padding:8px;border:1px solid #ddd;font-weight:bold">Winning Bid</td><td style="padding:8px;border:1px solid #ddd">₹${winningBid}</td></tr>
+        </table>
+        <p style="margin-top:16px">The winner has 24 hours to complete payment. You will be notified once payment is received.</p>
+      `,
+    }
+  );
+};
+
 module.exports = {
   setIo,
   createAndDeliverNotification,
@@ -133,4 +156,5 @@ module.exports = {
   notifyPaymentSuccess,
   notifyAuctionCancelled,
   notifyPaymentExpired,
+  notifySellerOfWinner,
 };

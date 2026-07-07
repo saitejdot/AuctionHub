@@ -2,6 +2,7 @@ const { Worker } = require('bullmq');
 const connection = require('../config/redis');
 const Auction = require('../models/Auction');
 const Bid = require('../models/Bid');
+const User = require('../models/User');
 const notificationService = require('../services/notificationService');
 const { schedulePaymentTimeout } = require('./auctionQueue');
 
@@ -30,11 +31,25 @@ const processCloseAuction = async (auctionId) => {
 
   const winnerIdStr = (auction.highestBidder._id || auction.highestBidder).toString();
 
+  // Fetch winner's full details (name + email) to share with seller
+  const winner = await User.findById(winnerIdStr).select('name email');
+
   // Notify winner
   await notificationService.notifyAuctionWon(
     winnerIdStr,
     auctionId,
     auction.title,
+    auction.currentHighestBid
+  );
+
+  // Notify seller with winner details
+  const sellerId = (auction.seller._id || auction.seller).toString();
+  await notificationService.notifySellerOfWinner(
+    sellerId,
+    auctionId,
+    auction.title,
+    winner?.name || 'Unknown',
+    winner?.email || 'N/A',
     auction.currentHighestBid
   );
 

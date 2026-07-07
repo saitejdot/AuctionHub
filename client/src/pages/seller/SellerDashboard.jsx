@@ -76,6 +76,7 @@ const SellerDashboard = () => {
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Item</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Current Bid</th>
+                  <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Winner</th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Bids</th>
                   <th className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                 </tr>
@@ -114,6 +115,18 @@ const SellerDashboard = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       ₹{auction.currentHighestBid}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {['payment_pending', 'sold', 'payment_expired'].includes(auction.status) && auction.highestBidder ? (
+                        <div>
+                          <p className="font-semibold text-gray-900">{auction.highestBidder.name}</p>
+                          <p className="text-xs text-gray-400">Highest bidder</p>
+                        </div>
+                      ) : auction.status === 'live' ? (
+                        <span className="text-gray-400 text-xs">Ongoing</span>
+                      ) : (
+                        <span className="text-gray-400 text-xs">No winner</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {auction.bidCount}
