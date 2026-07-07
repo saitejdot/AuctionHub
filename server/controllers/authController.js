@@ -83,7 +83,7 @@ exports.login = asyncHandler(async (req, res) => {
     expires: new Date(Date.now() + process.env.COOKIE_EXPIRE_DAYS * 24 * 60 * 60 * 1000),
     httpOnly: true, // Cookie cannot be accessed by client side scripts
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'strict',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
   };
 
   res.cookie('token', token, options);
@@ -104,6 +104,8 @@ exports.logout = asyncHandler(async (req, res) => {
   res.cookie('token', 'none', {
     expires: new Date(Date.now() + 10 * 1000),
     httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
   });
 
   sendResponse(res, 200, 'User logged out successfully');

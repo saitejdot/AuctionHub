@@ -5,7 +5,7 @@ const sendResponse = require('../utils/sendResponse');
  * Must be registered last in Express middleware chain.
  */
 const errorHandler = (err, req, res, next) => {
-  let statusCode = err.statusCode || 500;
+  let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
   let message = err.message || 'Internal Server Error';
 
   // Mongoose bad ObjectId
