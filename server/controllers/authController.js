@@ -35,11 +35,23 @@ exports.register = asyncHandler(async (req, res) => {
   });
 
   if (user) {
+    const token = generateToken(user._id, user.role);
+
+    // Set cookie
+    const options = {
+      expires: new Date(Date.now() + (process.env.COOKIE_EXPIRE_DAYS || 7) * 24 * 60 * 60 * 1000),
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
+    };
+    res.cookie('token', token, options);
+
     sendResponse(res, 201, 'User registered successfully', {
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
+      token,
     });
   } else {
     res.status(400);
@@ -80,7 +92,7 @@ exports.login = asyncHandler(async (req, res) => {
 
   // Set cookie
   const options = {
-    expires: new Date(Date.now() + process.env.COOKIE_EXPIRE_DAYS * 24 * 60 * 60 * 1000),
+    expires: new Date(Date.now() + (process.env.COOKIE_EXPIRE_DAYS || 7) * 24 * 60 * 60 * 1000),
     httpOnly: true, // Cookie cannot be accessed by client side scripts
     secure: process.env.NODE_ENV === 'production',
     sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'strict',
@@ -94,6 +106,7 @@ exports.login = asyncHandler(async (req, res) => {
     email: user.email,
     role: user.role,
     avatar: user.avatar,
+    token,
   });
 });
 

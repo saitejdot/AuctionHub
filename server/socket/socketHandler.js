@@ -6,7 +6,7 @@ let io;
 const initSocket = (server) => {
   const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
     .split(',')
-    .map((o) => o.trim())
+    .map((o) => o.trim().replace(/\/$/, ''))
     .filter(Boolean);
 
   io = new Server(server, {

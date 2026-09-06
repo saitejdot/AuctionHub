@@ -57,6 +57,9 @@ export const AuthProvider = ({ children }) => {
         payload: res.data.data,
       });
     } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+      }
       dispatch({
         type: 'AUTH_ERROR',
         payload: null, // Don't show error to unauthenticated users on load
@@ -71,6 +74,9 @@ export const AuthProvider = ({ children }) => {
   const login = async (formData) => {
     try {
       const res = await api.post('/auth/login', formData);
+      if (res.data?.data?.token) {
+        localStorage.setItem('token', res.data.data.token);
+      }
       dispatch({
         type: 'LOGIN_SUCCESS',
         payload: res.data.data,
@@ -88,6 +94,9 @@ export const AuthProvider = ({ children }) => {
   const register = async (formData) => {
     try {
       const res = await api.post('/auth/register', formData);
+      if (res.data?.data?.token) {
+        localStorage.setItem('token', res.data.data.token);
+      }
       return { success: true };
     } catch (err) {
       dispatch({
@@ -101,9 +110,11 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await api.post('/auth/logout');
-      dispatch({ type: 'LOGOUT' });
     } catch (err) {
       console.error('Logout error:', err);
+    } finally {
+      localStorage.removeItem('token');
+      dispatch({ type: 'LOGOUT' });
     }
   };
 

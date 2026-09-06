@@ -113,9 +113,8 @@ const AuctionForm = ({ isEdit = false }) => {
         await api.put(`/auctions/${id}`, formData); // Just update text details for now on edit
         showToast('Auction updated successfully', 'success');
       } else {
-        await api.post('/auctions', data, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.post('/auctions', data);
+        // NOTE: Do NOT set Content-Type manually — axios auto-sets multipart/form-data with boundary
         showToast('Auction created successfully', 'success');
       }
       navigate('/seller/dashboard');

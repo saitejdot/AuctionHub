@@ -6,8 +6,15 @@ const User = require('../models/User');
 exports.protect = asyncHandler(async (req, res, next) => {
   let token;
 
-  // Read token from the cookie
-  if (req.cookies.token) {
+  // 1. Check Authorization header (Bearer <token>)
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  // 2. Fall back to cookie
+  else if (req.cookies && req.cookies.token) {
     token = req.cookies.token;
   }
 
@@ -25,20 +32,20 @@ exports.protect = asyncHandler(async (req, res, next) => {
     req.user = await User.findById(decoded.id);
 
     if (!req.user) {
-        res.status(401);
-        throw new Error('Not authorized to access this route');
+      res.status(401);
+      throw new Error('User not found');
     }
 
     // Check if user is blocked
     if (req.user.isBlocked) {
-        res.status(403);
-        throw new Error('Account suspended');
+      res.status(403);
+      throw new Error('Account suspended');
     }
 
     next();
   } catch (err) {
     res.status(401);
-    throw new Error('Not authorized to access this route');
+    throw new Error(err.message || 'Not authorized to access this route');
   }
 });
 
