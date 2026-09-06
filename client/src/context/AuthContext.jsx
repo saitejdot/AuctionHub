@@ -50,6 +50,15 @@ export const AuthProvider = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   const loadUser = useCallback(async () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      dispatch({
+        type: 'AUTH_ERROR',
+        payload: null,
+      });
+      return;
+    }
+
     try {
       const res = await api.get('/auth/me');
       dispatch({
@@ -62,7 +71,7 @@ export const AuthProvider = ({ children }) => {
       }
       dispatch({
         type: 'AUTH_ERROR',
-        payload: null, // Don't show error to unauthenticated users on load
+        payload: null,
       });
     }
   }, []);
