@@ -59,7 +59,7 @@ export const AuthProvider = ({ children }) => {
     } catch (err) {
       dispatch({
         type: 'AUTH_ERROR',
-        payload: err.response?.data?.message || 'Authentication failed',
+        payload: null, // Don't show error to unauthenticated users on load
       });
     }
   }, []);
@@ -90,6 +90,10 @@ export const AuthProvider = ({ children }) => {
       const res = await api.post('/auth/register', formData);
       return { success: true };
     } catch (err) {
+      dispatch({
+        type: 'AUTH_ERROR',
+        payload: err.response?.data?.message || 'Registration failed',
+      });
       return { success: false, message: err.response?.data?.message || 'Registration failed' };
     }
   };

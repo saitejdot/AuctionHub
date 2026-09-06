@@ -1,0 +1,67 @@
+services:
+  - type: web
+    name: auctionhub-server
+    runtime: node
+    rootDir: server
+    buildCommand: npm install --omit=dev
+    startCommand: node server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      # ── MongoDB ──────────────────────────────────────────────────────────────
+      - key: MONGO_URI
+        sync: false   # Set this in the Render dashboard
+
+      # ── Auth ─────────────────────────────────────────────────────────────────
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_EXPIRE
+        value: 7d
+      - key: COOKIE_EXPIRE_DAYS
+        value: "7"
+
+      # ── Redis (BullMQ auction scheduler) ─────────────────────────────────────
+      # Optional but recommended — get a free instance at https://upstash.com
+      # Without this, auctions will NOT auto-close on end time.
+      - key: REDIS_URL
+        sync: false
+
+      # ── Cloudinary ───────────────────────────────────────────────────────────
+      - key: CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: CLOUDINARY_API_KEY
+        sync: false
+      - key: CLOUDINARY_API_SECRET
+        sync: false
+
+      # ── Razorpay ─────────────────────────────────────────────────────────────
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+
+      # ── Email (SMTP) ──────────────────────────────────────────────────────────
+      - key: SMTP_HOST
+        sync: false
+      - key: SMTP_PORT
+        value: "587"
+      - key: SMTP_USER
+        sync: false
+      - key: SMTP_PASS
+        sync: false
+      - key: SMTP_FROM
+        sync: false
+
+      # ── Admin Seed ───────────────────────────────────────────────────────────
+      - key: ADMIN_EMAIL
+        sync: false
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: ADMIN_NAME
+        value: Admin
+
+      # ── CORS (set to your Vercel frontend URL) ────────────────────────────────
+      - key: CLIENT_URL
+        sync: false   # e.g. https://auction-hub.vercel.app

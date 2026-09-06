@@ -9,7 +9,7 @@ const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
-// Route imports
+
 const authRoutes = require('./routes/authRoutes');
 const auctionRoutes = require('./routes/auctionRoutes');
 const bidRoutes = require('./routes/bidRoutes');
@@ -22,16 +22,16 @@ const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 const server = http.createServer(app);
 
-// Trust the first proxy (required for express-rate-limit to get real IPs on Render/Railway)
+
 app.set('trust proxy', 1);
 
-// Build allowed-origins list from CLIENT_URL (supports comma-separated values)
+
 const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:5173')
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean);
 
-// ── Middleware ─────────────────────────────────────────────────────────────
+//Middleware 
 app.use(helmet());
 app.use(cors({
   origin: allowedOrigins,
@@ -41,7 +41,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-// Global rate limiter — 100 requests per 10 minutes per IP
+
 app.use(rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 100,
@@ -50,7 +50,7 @@ app.use(rateLimit({
   legacyHeaders: false,
 }));
 
-// ── Routes ─────────────────────────────────────────────────────────────────
+// Routes 
 app.use('/api/auth', authRoutes);
 app.use('/api/auctions', auctionRoutes);
 app.use('/api/bids', bidRoutes);
@@ -70,14 +70,13 @@ app.use((req, res) => {
   res.status(404).json({ success: false, message: 'Route not found' });
 });
 
-// Global error handler (must be last)
 app.use(errorHandler);
 
-// ── Start Server ───────────────────────────────────────────────────────────
+// Start Server
 const { initSocket } = require('./socket/socketHandler');
 initSocket(server);
 
-// Start BullMQ Worker (graceful fallback if Redis unavailable)
+// Start BullMQ Worker 
 try {
   require('./queues/auctionProcessor');
   console.log('BullMQ worker started');

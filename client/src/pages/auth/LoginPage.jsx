@@ -89,6 +89,12 @@ const LoginPage = () => {
             Register here
           </Link>
         </p>
+        <p className="mt-4 text-center text-gray-600 text-sm">
+          Forgot Password?{' '}
+          <Link to="/register" className="text-primary-600 hover:text-primary-800 font-medium">
+            Click here
+          </Link>
+        </p>
       </div>
     </div>
   );

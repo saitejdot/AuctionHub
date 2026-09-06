@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { Gavel, ShieldCheck, Zap, Clock } from 'lucide-react';
+import { AuthContext } from '../context/AuthContext';
 
 const FeatureCard = ({ icon: Icon, title, description }) => (
   <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
@@ -13,6 +14,17 @@ const FeatureCard = ({ icon: Icon, title, description }) => (
 );
 
 const HomePage = () => {
+  const { isAuthenticated, user } = useContext(AuthContext);
+
+  // Determine where "Start Selling" should point
+  const sellLink = isAuthenticated && user?.role === 'seller'
+    ? '/seller/auctions/new'
+    : '/register';
+
+  const sellLabel = isAuthenticated && user?.role === 'seller'
+    ? 'Create an Auction'
+    : 'Start Selling';
+
   return (
     <div className="flex flex-col gap-20 py-10">
       {/* Hero Section */}
@@ -39,10 +51,10 @@ const HomePage = () => {
             Browse Auctions
           </Link>
           <Link
-            to="/register"
+            to={sellLink}
             className="w-full sm:w-auto bg-white text-gray-800 border-2 border-gray-200 px-8 py-4 rounded-xl font-bold text-lg hover:border-gray-300 hover:bg-gray-50 transition flex items-center justify-center"
           >
-            Start Selling
+            {sellLabel}
           </Link>
         </div>
       </section>
