@@ -76,12 +76,14 @@ app.use(errorHandler);
 const { initSocket } = require('./socket/socketHandler');
 initSocket(server);
 
-// Start BullMQ Worker 
-try {
-  require('./queues/auctionProcessor');
-  console.log('BullMQ worker started');
-} catch (err) {
-  console.warn('BullMQ worker failed to start (Redis unavailable):', err.message);
+// Start BullMQ Worker (if Redis is configured)
+if (process.env.REDIS_URL) {
+  try {
+    require('./queues/auctionProcessor');
+    console.log('BullMQ worker started');
+  } catch (err) {
+    console.warn('BullMQ worker failed to start (Redis unavailable):', err.message);
+  }
 }
 
 const start = async () => {

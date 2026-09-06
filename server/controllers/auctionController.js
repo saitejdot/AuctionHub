@@ -22,12 +22,13 @@ exports.createAuction = asyncHandler(async (req, res) => {
     status: 'live',
   });
 
-  // Schedule BullMQ jobs for this auction
-  try {
-    await scheduleAuctionJobs(auction._id.toString(), auction.endTime);
-  } catch (err) {
-    // Queue unavailable — log but don't fail the request
-    console.error('Queue scheduling failed:', err.message);
+  // Schedule BullMQ jobs for this auction (if Redis is configured)
+  if (process.env.REDIS_URL) {
+    try {
+      await scheduleAuctionJobs(auction._id.toString(), auction.endTime);
+    } catch (err) {
+      console.error('Queue scheduling failed:', err.message);
+    }
   }
 
   sendResponse(res, 201, 'Auction created successfully', auction);
