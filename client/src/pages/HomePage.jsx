@@ -18,8 +18,10 @@ const HomePage = () => {
 
   // Determine where "Start Selling" should point
   const sellLink = isAuthenticated && user?.role === 'seller'
-    ? '/seller/auctions/new'
-    : '/register';
+    ? '/seller/auctions/new'   // seller → straight to the form
+    : isAuthenticated
+      ? '/seller/auctions/new'  // buyer/admin → Access Denied page (explains & offers register)
+      : '/register';            // unauthenticated → register
 
   const sellLabel = isAuthenticated && user?.role === 'seller'
     ? 'Create an Auction'
