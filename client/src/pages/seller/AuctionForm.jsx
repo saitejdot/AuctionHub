@@ -96,11 +96,21 @@ const AuctionForm = ({ isEdit = false }) => {
     setSubmitting(true);
 
     try {
+      const endDateTime = new Date(formData.endTime);
+      if (isNaN(endDateTime.getTime()) || endDateTime <= new Date()) {
+        showToast('Auction end time must be in the future', 'warning');
+        setSubmitting(false);
+        return;
+      }
+
       // Create FormData to handle file uploads
       const data = new FormData();
-      Object.keys(formData).forEach(key => {
-        data.append(key, formData[key]);
-      });
+      data.append('title', formData.title.trim());
+      data.append('description', formData.description.trim());
+      data.append('category', formData.category);
+      data.append('startingPrice', formData.startingPrice);
+      data.append('minBidIncrement', formData.minBidIncrement);
+      data.append('endTime', endDateTime.toISOString());
       
       // Append new images
       images.forEach(image => {
@@ -108,18 +118,18 @@ const AuctionForm = ({ isEdit = false }) => {
       });
 
       if (isEdit) {
-        // Backend doesn't fully support updating images array out of the box in this boilerplate,
-        // but we send the form data anyway.
-        await api.put(`/auctions/${id}`, formData); // Just update text details for now on edit
+        await api.put(`/auctions/${id}`, {
+          ...formData,
+          endTime: endDateTime.toISOString(),
+        });
         showToast('Auction updated successfully', 'success');
       } else {
         await api.post('/auctions', data);
-        // NOTE: Do NOT set Content-Type manually — axios auto-sets multipart/form-data with boundary
         showToast('Auction created successfully', 'success');
       }
       navigate('/seller/dashboard');
     } catch (err) {
-      showToast(err.response?.data?.message || 'Something went wrong', 'error');
+      showToast(err.response?.data?.message || err.message || 'Something went wrong', 'error');
     } finally {
       setSubmitting(false);
     }

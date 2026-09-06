@@ -8,15 +8,46 @@ const { scheduleAuctionJobs } = require('../queues/auctionQueue');
 // @access  Private (Seller only)
 exports.createAuction = asyncHandler(async (req, res) => {
   const { title, description, category, startingPrice, minBidIncrement, endTime } = req.body;
-  const images = req.files ? req.files.map((file) => file.path) : [];
+  const images = req.files && req.files.length > 0
+    ? req.files.map((file) => file.path || file.secure_url || file.url).filter(Boolean)
+    : [];
+
+  if (!title || !description || !category || !startingPrice || !minBidIncrement || !endTime) {
+    res.status(400);
+    throw new Error('Please fill in all required auction fields (title, description, category, starting price, min bid increment, end time)');
+  }
+
+  const parsedStartingPrice = parseFloat(startingPrice);
+  const parsedMinBidIncrement = parseFloat(minBidIncrement);
+  const parsedEndTime = new Date(endTime);
+
+  if (isNaN(parsedStartingPrice) || parsedStartingPrice < 1) {
+    res.status(400);
+    throw new Error('Starting price must be a valid number of at least ₹1');
+  }
+
+  if (isNaN(parsedMinBidIncrement) || parsedMinBidIncrement < 1) {
+    res.status(400);
+    throw new Error('Minimum bid increment must be a valid number of at least ₹1');
+  }
+
+  if (isNaN(parsedEndTime.getTime())) {
+    res.status(400);
+    throw new Error('Invalid auction end time format');
+  }
+
+  if (parsedEndTime <= new Date()) {
+    res.status(400);
+    throw new Error('Auction end time must be in the future');
+  }
 
   const auction = await Auction.create({
-    title,
-    description,
+    title: title.trim(),
+    description: description.trim(),
     category,
-    startingPrice,
-    minBidIncrement,
-    endTime,
+    startingPrice: parsedStartingPrice,
+    minBidIncrement: parsedMinBidIncrement,
+    endTime: parsedEndTime,
     images,
     seller: req.user._id,
     status: 'live',
